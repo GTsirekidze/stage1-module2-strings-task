@@ -1,5 +1,9 @@
 package com.epam.mjc;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 public class MethodParser {
 
     /**
@@ -20,6 +24,29 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        //throw new UnsupportedOperationException("You should implement this method.");
+        MethodSignature signature = new MethodSignature(signatureString);
+
+        List <String> wordsList = Arrays.stream(signatureString.split("[, ()]"))
+                                    .filter(x -> !x.equals("")).toList();
+        int index = 0;
+
+        if(wordsList.get(index).equals("private") || wordsList.get(index).equals("protected") || wordsList.get(index).equals("public")){
+            signature.setAccessModifier(wordsList.get(index++));
+        }
+
+        signature.setReturnType(wordsList.get(index++));
+
+        signature.setMethodName(wordsList.get(index++));
+
+        List<MethodSignature.Argument> arguments = new LinkedList<>();
+        for(;index< wordsList.size();index+=2){
+            arguments.add(new MethodSignature.Argument(wordsList.get(index),wordsList.get(index+1)));
+        }
+
+        MethodSignature ansSignature = new MethodSignature(signature.getMethodName(),arguments);
+        ansSignature.setReturnType(signature.getReturnType());
+        ansSignature.setAccessModifier(signature.getAccessModifier());
+        return ansSignature;
     }
 }
